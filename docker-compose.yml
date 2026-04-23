@@ -1,0 +1,42 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - upload_data:/app/uploads
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8200
+      - OLLAMA_HOST=ollama
+      - OLLAMA_PORT=11434
+      - DEFAULT_MODEL=deepseek-r1:8b
+    depends_on:
+      - chromadb
+      - ollama
+
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8200:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  upload_data:
+  chroma_data:
+  ollama_data:
